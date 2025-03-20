@@ -1,0 +1,62 @@
+import random
+from math import gcd
+
+# -------------------------
+# 1. Generate Keys
+# -------------------------
+# Select two prime numbers
+p = 61  # Prime number 1
+q = 53  # Prime number 2
+
+# Calculate n and Euler's totient function
+n = p * q
+phi = (p - 1) * (q - 1)
+
+# Choose public key exponent 'e'
+# e must be coprime with phi
+e = random.randint(2, phi - 1)
+while gcd(e, phi) != 1:
+    e = random.randint(2, phi - 1)
+
+# Calculate private key exponent 'd'
+# d is the modular multiplicative inverse of e mod phi
+def mod_inverse(e, phi):
+    for d in range(2, phi):
+        if (e * d) % phi == 1:
+            return d
+    return None
+
+d = mod_inverse(e, phi)
+
+# Display the keys
+print("\n🔑 RSA Keys Generated:")
+print(f"Public Key: (e={e}, n={n})")
+print(f"Private Key: (d={d}, n={n})")
+
+# -------------------------
+# 2. Encryption
+# -------------------------
+def encrypt(message, e, n):
+    encrypted = [pow(ord(char), e, n) for char in message]
+    return encrypted
+
+# -------------------------
+# 3. Decryption
+# -------------------------
+def decrypt(encrypted, d, n):
+    decrypted = ''.join([chr(pow(char, d, n)) for char in encrypted])
+    return decrypted
+
+# -------------------------
+# 4. Execution
+# -------------------------
+# Ask the user for a message
+message = input("\n📧 Enter the message you want to encrypt: ")
+
+# Encrypt the message
+encrypted_message = encrypt(message, e, n)
+print(f"\n🔐 Encrypted Message: {encrypted_message}")
+
+# Decrypt the message
+decrypted_message = decrypt(encrypted_message, d, n)
+print(f"\n🔓 Decrypted Message: {decrypted_message}")
